@@ -9,10 +9,10 @@
 struct
 {
     volatile unsigned int FLAG_0:1;
-    volatile unsigned int FLAG_1:1;
-    volatile uint8_t duty;
-    uint8_t low;
-} FLAG_BIT;
+        volatile unsigned int FLAG_1:1;
+        volatile uint8_t duty;
+        uint8_t low;
+    } FLAG_BIT;
 
     uint16_t value;
     int i=0;
@@ -191,32 +191,63 @@ struct
             else
                 cont.down_d = 0;
 
-            if(cont.up_d == 1 && count1 < 6)
+            if(value < 592)
             {
-                windowd_up();
-                count1++;
-            }
-            else if(cont.down_d == 1 && count1 > 0)
-            {
-                windowd_down();
-                count1--;
-            }
-
-            if(cont.lock == 0)
-            {
-                if(cont.up_p == 1 && count2 < 6)
+                if(cont.up_d == 1 && count1 < 6)
                 {
-                    windowp_up();
-                    count2++;
+                    windowd_up();
+                    count1++;
+                }
+                else if(cont.down_d == 1 && count1 > 0)
+                {
+                    windowd_down();
+                    count1--;
                 }
 
-                else if(cont.down_p == 1 && count2 > 0)
+                if(cont.lock == 0)
+                {
+                    if(cont.up_p == 1 && count2 < 6)
+                    {
+                        windowp_up();
+                        count2++;
+                    }
+
+                    else if(cont.down_p == 1 && count2 > 0)
+                    {
+                        windowp_down();
+                        count2--;
+                    }
+                }
+            }
+
+            else if(value > 592 && value < 671) // obstacle
+            {
+                while(count1 > 0)
+                {
+                    windowd_down();
+                    count1--;
+                }
+                while(count2 > 0)
                 {
                     windowp_down();
                     count2--;
                 }
             }
+            else // rain
+            {
+                while(count1 < 6)
+                {
+                    windowd_up();
+                    count1++;
+                }
+                while(count2 < 6)
+                {
+                    windowp_up();
+                    count2++;
+                }
+            }
         }
+
 
 
 
@@ -266,6 +297,7 @@ struct
         }
     }
 }
+
 
 void config_switch()
 {
